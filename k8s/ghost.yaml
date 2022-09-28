@@ -1,0 +1,122 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ghost
+  namespace: predictivemovement-ghost
+spec:
+  ports:
+    - port: 2368
+      targetPort: 2368
+  selector:
+    app: ghost
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ghost-ingress
+  namespace: predictivemovement-ghost
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+    - hosts:
+        - ghost.predictivemovement.se
+      secretName: predictivemovement-se-tls
+  rules:
+    - host: ghost.predictivemovement.se
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ghost
+                port:
+                  number: 2368
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: ghost
+  name: predictivemovement-ghost
+  namespace: predictivemovement-ghost
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    app: ghost
+  name: ghost
+  namespace: predictivemovement-ghost
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ghost
+  template:
+    metadata:
+      labels:
+        app: ghost
+    spec:
+      containers:
+      - env:
+        - name: ALLOW_EMPTY_PASSWORD
+          value: "yes"
+        - name: MARIADB_HOST
+          value: mariadb
+        - name: MARIADB_PORT_NUMBER
+          value: "3306"
+        - name: GHOST_DATABASE_NAME
+          value: bitnami_ghost
+        - name: GHOST_DATABASE_USER
+          value: bn_ghost
+        - name: GHOST_DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: mariadb
+        - name: GHOST_HOST
+          value: predictivemovement.se/
+        - name: GHOST_PROTOCOL
+          value: https
+        - name: GHOST_PORT_NUMBER
+          value: "443"
+        - name: GHOST_USERNAME
+          value: christian.landgren@iteam.se
+        - name: GHOST_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: ghost
+        - name: GHOST_EMAIL
+          value: christian.landgren@iteam.se
+        - name: BLOG_TITLE
+          value: predictivemovement
+        image: docker.io/bitnami/ghost:3-debian-10
+        imagePullPolicy: IfNotPresent
+        name: ghost
+        ports:
+        - containerPort: 2368
+          name: http
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 300m
+            memory: 512Mi
+        volumeMounts:
+        - mountPath: /bitnami/ghost
+          name: predictivemovement-ghost
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: predictivemovement-ghost
+        persistentVolumeClaim:
+          claimName: predictivemovement-ghost
