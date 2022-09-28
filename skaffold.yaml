@@ -1,0 +1,9 @@
+apiVersion: skaffold/v2alpha4
+kind: Config
+metadata:
+  name: predictivemovement.se
+deploy:
+  kubectl:
+    manifests:
+      - "k8s/mariadb.yaml"
+  statusCheckDeadlineSeconds: 600
