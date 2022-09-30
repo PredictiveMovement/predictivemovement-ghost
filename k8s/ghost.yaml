@@ -40,7 +40,7 @@ kind: PersistentVolumeClaim
 metadata:
   labels:
     app: ghost
-  name: predictivemovement-ghost
+  name: ghost
   namespace: predictivemovement-ghost
 spec:
   accessModes:
@@ -113,10 +113,13 @@ spec:
             memory: 512Mi
         volumeMounts:
         - mountPath: /bitnami/ghost
-          name: predictivemovement-ghost
+          name: ghost
       restartPolicy: Always
+      securityContext:
+        fsGroup: 1001
+        runAsUser: 1001
       terminationGracePeriodSeconds: 30
       volumes:
-      - name: predictivemovement-ghost
+      - name: ghost
         persistentVolumeClaim:
-          claimName: predictivemovement-ghost
+          claimName: ghost
