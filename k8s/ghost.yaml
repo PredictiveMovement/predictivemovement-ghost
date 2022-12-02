@@ -35,7 +35,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: predictivemovement-ghost
+                name: ghost
                 port:
                   number: 2368
     - host: www.predictivemovement.se
@@ -45,7 +45,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: predictivemovement-ghost
+                name: ghost
                 port:
                   number: 2368
     - host: predictivemovement.se
@@ -55,7 +55,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: predictivemovement-ghost
+                name: ghost
                 port:
                   number: 2368
 
