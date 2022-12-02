@@ -22,11 +22,13 @@ spec:
   tls:
     - hosts:
       - ghost.predictivemovement.se
-        secretName: ghost-ghost-predictivemovement-se-tls
+      secretName: ghost-ghost-predictivemovement-se-tls
+    - hosts:
       - predictivemovement.se
-        secretName: ghost-APEX-predictivemovement-se-tls
+      secretName: ghost-apex-predictivemovement-se-tls
+    - hosts:
       - www.predictivemovement.se
-        secretName: ghost-www-predictivemovement-se-tls
+      secretName: ghost-www-predictivemovement-se-tls
   rules:
     - host: ghost.predictivemovement.se
       http:
